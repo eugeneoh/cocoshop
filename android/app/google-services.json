@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "107543938586",
+    "firebase_url": "https://cocoshop-47eff.firebaseio.com",
+    "project_id": "cocoshop-47eff",
+    "storage_bucket": "cocoshop-47eff.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:107543938586:android:3ad45b2705bb6045",
+        "android_client_info": {
+          "package_name": "com.cocoshop"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "107543938586-15q1emd6c5bb5s1o4h3pug8sfl6g7dh0.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "107543938586-15q1emd6c5bb5s1o4h3pug8sfl6g7dh0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBt5yeaELL1GVXIyJEFIZPQCpYzwDvRzxw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
