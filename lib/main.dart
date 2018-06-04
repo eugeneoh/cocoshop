@@ -1,9 +1,26 @@
 import 'package:flutter/material.dart';
 import 'home.dart';
 import 'splash.dart';
+import 'search.dart';
+import 'profile.dart';
+import 'favorites.dart';
 
 void main() => runApp(new MyApp());
 
+  final pagesRouteFactories = {
+    "/home": () => MaterialPageRoute(
+          builder: (context) =>  new HomePage()
+        ),
+    "search": () => MaterialPageRoute(
+          builder: (context) => new SearchPage()
+        ),
+    "favorites": () => MaterialPageRoute(
+          builder: (context) => new FavoritesPage()
+        ),
+    "profile": () => MaterialPageRoute(
+          builder: (context) => new ProfilePage()
+        ),
+  };
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
@@ -20,12 +37,14 @@ class MyApp extends StatelessWidget {
         // or press Run > Flutter Hot Reload in IntelliJ). Notice that the
         // counter didn't reset back to zero; the application is not restarted.
         primarySwatch: Colors.yellow,
+        accentColor: Colors.grey,
       ),
       home: new SplashPage(),
+      onGenerateRoute: (route) => pagesRouteFactories[route.name](),
       // routes: <String, WidgetBuilder> {
-      //   '/a': (BuildContext context) => new MyPage(title: 'page A'),
-      //   '/b': (BuildContext context) => new MyPage(title: 'page B'),
-      //   '/c': (BuildContext context) => new MyPage(title: 'page C'),
+      //   '/search': (BuildContext context) => MaterialPageRoute(builder: (context) => new SplashPage()),
+        // '/favorites': (BuildContext context) => new FavoritesPage(),
+        // '/profile': (BuildContext context) => new ProfilePage(),
       // },
     );
   }

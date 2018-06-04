@@ -17,6 +17,7 @@ class FBApi {
       // print(response.body);
       return jsonDecode(response.body);
     });
+    print(apiData['data']);
     return apiData['data'];
   }
 }

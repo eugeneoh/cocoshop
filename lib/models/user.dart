@@ -7,6 +7,7 @@ class User {
   String username;
   String fbAccessToken;
   String email;
+  String photoUrl;
   DateTime tokenExpiration;
 
   User(
@@ -17,6 +18,7 @@ class User {
     this.username, 
     this.fbAccessToken, 
     this.email,
+    this.photoUrl,
     this.tokenExpiration,
     );
 
@@ -28,6 +30,7 @@ class User {
     this.username = data["username"];
     this.fbAccessToken = data["fb_access_token"];
     this.email = data["email"];
+    this.photoUrl = data["photo_url"];
     this.tokenExpiration = data["token_expiration"];
   }
 }

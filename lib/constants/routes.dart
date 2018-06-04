@@ -1,0 +1,1 @@
+final routes = ['/home', 'search', 'favorites', 'profile'];

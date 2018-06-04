@@ -3,13 +3,16 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'models/user.dart';
+import 'package:coco_shop/models/user.dart';
+import 'package:coco_shop/models/post.dart';
 import 'fb_api.dart';
 import 'dart:convert';
+import 'constants/routes.dart';
+import 'services/current_user_service.dart';
+import 'package:coco_shop/services/firestore_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({this.firebaseUser, this.currentUser});
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
   // how it looks.
@@ -17,36 +20,41 @@ class HomePage extends StatefulWidget {
   // case the title) provided by the parent (in this case the App widget) and
   // used by the build method of the State. Fields in a Widget subclass are
   // always marked "final".
-  final FirebaseUser firebaseUser;
-  final User currentUser;
 
   @override
   _HomePageState createState() => new _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  final Firestore store = Firestore.instance;
+  final CurrentUserService currentUserService = new CurrentUserService();
+  final Firestore store = new FirestoreService().store;
   FBApi fbApi;
-
-  User _currentUser;
+  User currentUser;
 
   @override
   void initState() {
     super.initState();
-    this.initializeFBApi(widget.currentUser);
-    // this._getFriends();
+    User user = currentUserService.getCurrentUser();
+    this.initializeFBApi(user);
+    this.currentUser = user;
+  }
+
+  Future<List> fetchPosts() async {
+    QuerySnapshot res = await this.store.collection('posts').orderBy('created_at', descending: true).getDocuments();
+    List<Post> posts = [];
+    if (res.documents.isNotEmpty) {
+      res.documents.forEach((d) {
+        Post post = new Post.fromMap(d.data);
+        posts.add(post);
+      });
+    }
+    return posts;
   }
 
   void _noOp() {
     print('this is a no op for now');
     // print(widget.accessToken.token);
     // print(widget.accessToken.userId);
-  }
-
-  void _setCurrentUser(User user) {
-    setState(() {
-      _currentUser = user;
-    });
   }
 
   void initializeFBApi(User user) {
@@ -67,13 +75,25 @@ class _HomePageState extends State<HomePage> {
     return children;
   }
 
+  Widget createListView(BuildContext context, AsyncSnapshot snapshot) {
+    List<Post> posts = snapshot.data;
+    return new ListView.builder(
+      itemCount: posts.length,
+      itemBuilder: (BuildContext context, int index) {
+        Post currPost = posts[index];
+        return new Row (
+          children: [
+            new Expanded(child: new Image.network(currPost.picURL1),),
+            new Expanded(child: new Text(currPost.description),)
+          ],
+        );
+      }
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    // _getFriends();
-    // print(widget.currentUser.photoUrl);
-    if (this._currentUser != null) {
-      this._getFriends();
-    }
+    this._getFriends();
     return new Scaffold(
       appBar: new AppBar(
         leading: new IconButton(icon: new Icon(Icons.list), onPressed: _noOp),
@@ -88,31 +108,43 @@ class _HomePageState extends State<HomePage> {
           new IconButton(icon: new Icon(Icons.shopping_cart), onPressed: _noOp),
         ],
       ),
-      body: new Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: new Column(
-          // Column is also layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug paint" (press "p" in the console where you ran
-          // "flutter run", or select "Toggle Debug Paint" from the Flutter tool
-          // window in IntelliJ) to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: this.buildChildren(),
-        ),
+      body: new FutureBuilder(
+        future: fetchPosts(),
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+            case ConnectionState.waiting:
+              return new Text('loading...');
+
+            default:
+              if (snapshot.hasError)
+                return new Text('Error: ${snapshot.error}');
+              else
+                return createListView(context, snapshot);
+          }
+        }
       ),
-      floatingActionButton: new FloatingActionButton(
-        tooltip: 'Increment',
-        child: new Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(
+            title: Text('Home'),
+            icon: Icon(Icons.home, color: Colors.grey,)
+          ),
+          BottomNavigationBarItem(
+            title: Text('Search'),
+            icon: Icon(Icons.search, color: Colors.grey,)
+          ),
+          BottomNavigationBarItem(
+            title: Text('Favorites'),
+            icon: Icon(Icons.favorite, color: Colors.grey,)
+          ),
+          BottomNavigationBarItem(
+            title: Text('Profile'),
+            icon: Icon(Icons.portrait, color: Colors.grey,)
+          ),
+        ],
+        onTap: (routeIndex) => Navigator.of(context).pushReplacementNamed(routes[routeIndex])
+      ),
     );
   }
 }
