@@ -93,7 +93,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    this._getFriends();
+    // this._getFriends();
     return new Scaffold(
       appBar: new AppBar(
         leading: new IconButton(icon: new Icon(Icons.list), onPressed: _noOp),
